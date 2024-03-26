@@ -1,0 +1,49 @@
+.navbar{
+    background-color: #092C9F;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+#loader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99999;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#loader .loading-icon {
+    width: 42px;
+    height: auto;
+    animation: loadingAnimation 1s infinite;
+}
+
+.user {
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #092C9F;
+}
+
+.user img {
+    width: 60px;
+    height: auto;
+    margin-right: 10px;
+}
+
+
+@media (min-width: 276px) {
+    .user {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+}
+
+
