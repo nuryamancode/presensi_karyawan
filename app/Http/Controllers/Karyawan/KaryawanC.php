@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
+use App\Models\JamPresensiM;
 use App\Models\KaryawanModel;
 use App\Models\PresensiModel;
 use App\Models\User;
@@ -37,6 +38,28 @@ class KaryawanC extends Controller
             ->get();
         $total_telat = $telat->count();
         $total_hadir = $hadir->count();
+        $jam_masuk = JamPresensiM::where('status_jam', 'Masuk')->first();
+        $jam_pulang = JamPresensiM::where('status_jam', 'Pulang')->first();
+        $waktu_buka_m = Carbon::parse($jam_masuk->waktu_buka)->format('Y-m-d\TH:i:s');
+        $waktu_telat_m = Carbon::parse($jam_masuk->waktu_telat)->format('Y-m-d\TH:i:s');
+        $waktu_tutup_m =  Carbon::parse($jam_masuk->waktu_tutup)->format('Y-m-d\TH:i:s');
+        $waktu_buka_p = Carbon::parse($jam_pulang->waktu_buka)->format('Y-m-d\TH:i:s');
+        $waktu_telat_p = Carbon::parse($jam_pulang->waktu_telat)->format('Y-m-d\TH:i:s');
+        $waktu_tutup_p =  Carbon::parse($jam_pulang->waktu_tutup)->format('Y-m-d\TH:i:s');
+        $waktu_sekarang = now();
+
+        $button_disabled_m =
+            $waktu_sekarang < $waktu_buka_m ||
+            $waktu_sekarang > $waktu_telat_m ||
+            $waktu_sekarang > $waktu_tutup_m
+                ? 'disabled'
+                : '';
+        $button_disabled_p =
+            $waktu_sekarang < $waktu_buka_p ||
+            $waktu_sekarang > $waktu_telat_p ||
+            $waktu_sekarang > $waktu_tutup_p
+                ? 'disabled'
+                : '';
         $data = [
             'karyawan' => $karyawan,
             'presensi' => $presensi,
@@ -44,6 +67,19 @@ class KaryawanC extends Controller
             'total_telat' => $total_telat,
             'presensi_masuk_today' => $presensi_masuk_today,
             'presensi_pulang_today' => $presensi_pulang_today,
+            'waktu_sekarang' => $waktu_sekarang,
+
+
+            'button_disabled_m' => $button_disabled_m,
+            'button_disabled_p' => $button_disabled_p,
+            'waktu_buka_m' => $waktu_buka_m,
+            'waktu_tutup_m' => $waktu_tutup_m,
+            'waktu_telat_m' => $waktu_telat_m,
+            'jam_masuk' => $jam_masuk,
+            'waktu_buka_p' => $waktu_buka_p,
+            'waktu_tutup_p' => $waktu_tutup_p,
+            'waktu_telat_p' => $waktu_telat_p,
+            'jam_pulang' => $jam_pulang,
         ];
         return view("karyawan.v-presensi", $data);
     }
@@ -73,6 +109,28 @@ class KaryawanC extends Controller
             ->get();
         $total_telat = $telat->count();
         $total_hadir = $hadir->count();
+        $jam_masuk = JamPresensiM::where('status_jam', 'Masuk')->first();
+        $jam_pulang = JamPresensiM::where('status_jam', 'Pulang')->first();
+        $waktu_buka_m = Carbon::parse($jam_masuk->waktu_buka)->format('Y-m-d\TH:i:s');
+        $waktu_telat_m = Carbon::parse($jam_masuk->waktu_telat)->format('Y-m-d\TH:i:s');
+        $waktu_tutup_m =  Carbon::parse($jam_masuk->waktu_tutup)->format('Y-m-d\TH:i:s');
+        $waktu_buka_p = Carbon::parse($jam_pulang->waktu_buka)->format('Y-m-d\TH:i:s');
+        $waktu_telat_p = Carbon::parse($jam_pulang->waktu_telat)->format('Y-m-d\TH:i:s');
+        $waktu_tutup_p =  Carbon::parse($jam_pulang->waktu_tutup)->format('Y-m-d\TH:i:s');
+        $waktu_sekarang = now();
+
+        $button_disabled_m =
+            $waktu_sekarang < $waktu_buka_m ||
+            $waktu_sekarang > $waktu_telat_m ||
+            $waktu_sekarang > $waktu_tutup_m
+                ? 'disabled'
+                : '';
+        $button_disabled_p =
+            $waktu_sekarang < $waktu_buka_p ||
+            $waktu_sekarang > $waktu_telat_p ||
+            $waktu_sekarang > $waktu_tutup_p
+                ? 'disabled'
+                : '';
         $data = [
             'karyawan' => $karyawan,
             'presensi' => $presensi,
@@ -80,6 +138,19 @@ class KaryawanC extends Controller
             'total_telat' => $total_telat,
             'presensi_masuk_today' => $presensi_masuk_today,
             'presensi_pulang_today' => $presensi_pulang_today,
+            'waktu_sekarang' => $waktu_sekarang,
+
+
+            'button_disabled_m' => $button_disabled_m,
+            'button_disabled_p' => $button_disabled_p,
+            'waktu_buka_m' => $waktu_buka_m,
+            'waktu_tutup_m' => $waktu_tutup_m,
+            'waktu_telat_m' => $waktu_telat_m,
+            'jam_masuk' => $jam_masuk,
+            'waktu_buka_p' => $waktu_buka_p,
+            'waktu_tutup_p' => $waktu_tutup_p,
+            'waktu_telat_p' => $waktu_telat_p,
+            'jam_pulang' => $jam_pulang,
         ];
         return view("karyawan.v-presensi-notifikasi", $data);
     }

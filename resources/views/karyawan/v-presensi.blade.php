@@ -3,17 +3,7 @@
 @section('section-content')
     @php
         // Presensi Masuk
-        $waktu_sekarang_m = now();
-        $waktu_buka_m = now()->setHour(8)->setMinute(50)->setSecond(0);
-        $waktu_telat_m = now()->setHour(9)->setMinute(30)->setSecond(0);
-        $waktu_tutup_m = now()->setHour(10)->setMinute(0)->setSecond(0);
 
-        $button_disabled_m =
-            $waktu_sekarang_m < $waktu_buka_m ||
-            $waktu_sekarang_m > $waktu_telat_m ||
-            $waktu_sekarang_m > $waktu_tutup_m
-                ? 'disabled'
-                : '';
         // Presensi Masuk
 
         // Presensi Pulang
@@ -22,7 +12,12 @@
         $waktu_telat_p = now()->setHour(17)->setMinute(30)->setSecond(0);
         $waktu_tutup_p = now()->setHour(18)->setMinute(0)->setSecond(0);
 
-        $button_disabled_p = $waktu_sekarang_p < $waktu_buka_p || $waktu_sekarang_p > $waktu_telat_p || $waktu_sekarang_p > $waktu_tutup_p ? 'disabled' : '';
+        $button_disabled_p =
+            $waktu_sekarang_p < $waktu_buka_p ||
+            $waktu_sekarang_p > $waktu_telat_p ||
+            $waktu_sekarang_p > $waktu_tutup_p
+                ? 'disabled'
+                : '';
         // Presensi Pulang
     @endphp
     @include('karyawan.layout.v-loader')
@@ -273,7 +268,7 @@
         // Presensi Masuk
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('presensi_masuk_link').addEventListener('click', function(event) {
-                var waktuSekarang = new Date();
+                var waktuSekarang = new Date("{{ $waktu_sekarang }}");
                 var waktuTelat = new Date("{{ $waktu_telat_m }}");
                 var waktuBuka = new Date("{{ $waktu_buka_m }}");
                 var waktuTutup = new Date("{{ $waktu_tutup_m }}");
@@ -320,7 +315,7 @@
         // Presensi Pulang
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('presensi_pulang_link').addEventListener('click', function(event) {
-                var waktuSekarang = new Date();
+                var waktuSekarang = new Date("{{ $waktu_sekarang }}");
                 var waktuTelat = new Date("{{ $waktu_telat_p }}");
                 var waktuBuka = new Date("{{ $waktu_buka_p }}");
                 var waktuTutup = new Date("{{ $waktu_tutup_p }}");
@@ -334,7 +329,7 @@
                         confirmButtonText: 'Baik',
                     });
                 } else {
-                    if (waktuSekarang <= waktuBuka) {
+                    if (waktuSekarang < waktuBuka) {
                         event.preventDefault();
                         Swal.fire({
                             icon: 'error',

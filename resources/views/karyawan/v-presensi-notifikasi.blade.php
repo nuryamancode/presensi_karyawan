@@ -289,10 +289,10 @@
     {{-- alert pulang --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Presensi Masuk
-        document.addEventListener('DOMContentLoaded', function() {
+         // Presensi Masuk
+         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('presensi_masuk_link').addEventListener('click', function(event) {
-                var waktuSekarang = new Date();
+                var waktuSekarang = new Date("{{ $waktu_sekarang }}");
                 var waktuTelat = new Date("{{ $waktu_telat_m }}");
                 var waktuBuka = new Date("{{ $waktu_buka_m }}");
                 var waktuTutup = new Date("{{ $waktu_tutup_m }}");
@@ -339,22 +339,21 @@
         // Presensi Pulang
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('presensi_pulang_link').addEventListener('click', function(event) {
-                var waktuSekarang = new Date();
+                var waktuSekarang = new Date("{{ $waktu_sekarang }}");
                 var waktuTelat = new Date("{{ $waktu_telat_p }}");
                 var waktuBuka = new Date("{{ $waktu_buka_p }}");
                 var waktuTutup = new Date("{{ $waktu_tutup_p }}");
                 var hariini = "{{ $presensi_pulang_today }}";
-
                 if (hariini) {
                     event.preventDefault();
                     Swal.fire({
                         icon: 'error',
-                        title: 'Presensi Pulang Sudah Dilakukan',
+                        title: 'Presensi Masuk Sudah Dilakukan',
                         text: 'Maaf, Anda sudah melakukan presensi pulang hari ini.',
                         confirmButtonText: 'Baik',
                     });
                 } else {
-                    if (waktuSekarang <= waktuBuka) {
+                    if (waktuSekarang < waktuBuka) {
                         event.preventDefault();
                         Swal.fire({
                             icon: 'error',
