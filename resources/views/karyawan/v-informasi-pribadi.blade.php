@@ -71,7 +71,7 @@
                             <div class="mb-3">
                                 <label for="no_wa" class="form-label">Nomor Wa</label>
                                 <input type="text" class="form-control" id="no_wa" aria-describedby="no_wa"
-                                    name="no_wa" value="{{ $karyawan->nomor_wa ?? 'Belum diatur' }}">
+                                    name="no_wa" value="{{ $karyawan->nomor_wa ?? 'Belum diatur' }}" pattern="[0-9]+" title="Masukkan hanya nomor" inputmode="numeric">
                             </div>
                             <div class="mb-3">
                                 <label for="alamat" class="form-label">Alamat Lengkap</label>

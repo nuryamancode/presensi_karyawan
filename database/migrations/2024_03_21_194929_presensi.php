@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('kordinat');
             $table->string('foto');
-            $table->string('jam');
-            $table->string('tanggal');
+            $table->time('jam');
+            $table->date('tanggal');
             $table->enum('status_presensi', ['Masuk','Pulang']);
             $table->unsignedBigInteger('karyawan_id');
             $table->foreign('karyawan_id')->references('id')->on('data_karyawan')->onDelete('cascade');

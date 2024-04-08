@@ -108,7 +108,7 @@
                                     </div>
                                     <div class="presencedetail">
                                         <h4 class="rekappresencetitle">Cuti</h4>
-                                        <span class="rekappresencedetail">0 Kali</span>
+                                        <span class="rekappresencedetail">{{$total_cuti}} Kali</span>
                                     </div>
                                 </div>
                             </div>
@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="presencedetail">
                                         <h4 class="rekappresencetitle">Sakit</h4>
-                                        <span class="rekappresencedetail">0 Kali</span>
+                                        <span class="rekappresencedetail">{{$total_sakit}} Kali</span>
                                     </div>
                                 </div>
                             </div>
@@ -160,11 +160,15 @@
                             <a class="nav-link active position-relative" data-toggle="tab"
                                 href="{{ route('employee.notifikasi') }}" role="tab">
                                 Notifikasi
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    99+
-                                    <span class="visually-hidden">unread messages</span>
-                                </span>
+                                @if ($jumlah_notif == 0)
+                                    {{ null }}
+                                @else
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ $jumlah_notif }}
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                @endif
                             </a>
                         </li>
                     </ul>
@@ -172,48 +176,47 @@
                 <div class="tab-content mt-2" style="margin-bottom:100px;">
                     <div class="tab-pane fade show active" id="profile" role="tabpanel">
                         <ul class="listview image-listview">
+                            @if ($notifikasi->isEmpty())
                             <li>
-                                <div class="item">
-                                    <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
-                                    <div class="in">
-                                        <div>Edward Lindgren</div>
-                                        <span class="text-muted">Designer</span>
-                                    </div>
+                                <div class="text-center">
+                                    <h3 class="fw-bold mt-1">Belum ada notifikasi</h3>
                                 </div>
                             </li>
-                            <li>
-                                <div class="item">
-                                    <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
-                                    <div class="in">
-                                        <div>Emelda Scandroot</div>
-                                        <span class="badge badge-primary">3</span>
-                                    </div>
+                            @else
+                            <li class="p-3">
+                                <div class="row">
+                                    <div class="col"><a href="#" onclick="hapusData('{{ route('employee.hapus.notif') }}')" class="p-3">Hapus Semua</a></div>
+                                    <div class="col text-end"><a href="{{ route('employee.notifikasi.semua') }}" class="p-3">Lihat Semua</a></div>
                                 </div>
                             </li>
-                            <li>
-                                <div class="item">
-                                    <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
-                                    <div class="in">
-                                        <div>Henry Bove</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="item">
-                                    <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
-                                    <div class="in">
-                                        <div>Henry Bove</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="item">
-                                    <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
-                                    <div class="in">
-                                        <div>Henry Bove</div>
-                                    </div>
-                                </div>
-                            </li>
+                            @if ($notifikasi->count() > 0)
+                                @foreach ($notifikasi as $item)
+                                    <li>
+                                        <div class="item">
+                                            <div class="icon-box bg-primary">
+                                                <ion-icon name="alert-circle-outline"></ion-icon>
+                                            </div>
+                                            <div class="in">
+                                                <div>
+                                                    <h3 class="fw-bold">{{ $item->judul }}</h3>
+                                                    <span>{{ Str::limit($item->keterangan, 50) }}</span>
+                                                </div>
+                                                @if ($item->dibaca == false)
+                                                    <a class="btn btn-danger" href="{{ route('employee.baca.notif', $item->id) }}">
+                                                        Baca Notifikasi
+                                                    </a>
+                                                @else
+                                                    <a class="btn btn-success disabled">
+                                                        Sudah Dibaca
+                                                    </a>
+                                                @endif
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            @endif
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -289,8 +292,8 @@
     {{-- alert pulang --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-         // Presensi Masuk
-         document.addEventListener('DOMContentLoaded', function() {
+        // Presensi Masuk
+        document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('presensi_masuk_link').addEventListener('click', function(event) {
                 var waktuSekarang = new Date("{{ $waktu_sekarang }}");
                 var waktuTelat = new Date("{{ $waktu_telat_m }}");
@@ -381,5 +384,22 @@
             });
         });
         // Presensi Pulang
+
+        function hapusData(deleteUrl) {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah kamu yakin ingin menghapus semua notifikasi?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#435ebe',
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = deleteUrl;
+                }
+            });
+        }
     </script>
 @endsection

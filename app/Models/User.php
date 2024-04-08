@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
+        'level',
     ];
 
     /**
@@ -42,6 +43,12 @@ class User extends Authenticatable
     ];
 
     public function karyawan (){
-        return $this->hasMany(KaryawanModel::class);
+        return $this->hasOne(KaryawanModel::class);
+    }
+    public function hr (){
+        return $this->hasOne(HumanResourcesM::class);
+    }
+    public function direktur (){
+        return $this->hasOne(DirekturM::class);
     }
 }

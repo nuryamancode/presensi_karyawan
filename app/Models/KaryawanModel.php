@@ -33,4 +33,13 @@ class KaryawanModel extends Model
     public function presensi (){
         return $this->hasOne(PresensiModel::class);
     }
+    public function cuti(){
+        return $this->hasOne(CutiM::class);
+    }
+    public function sakit(){
+        return $this->hasOne(SakitM::class);
+    }
+    public function rekap(){
+        return $this->hasOne(RekapM::class);
+    }
 }

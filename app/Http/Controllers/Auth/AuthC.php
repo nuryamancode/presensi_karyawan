@@ -31,9 +31,9 @@ class AuthC extends Controller
             if ($user->level == 'Karyawan') {
                 return redirect()->route('employee.dashboard');
             } elseif ($user->level == 'Direktur') {
-                return redirect('/homedirektur');
+                return redirect()->route('direktur.dashboard');
             } elseif ($user->level == 'Human Resource') {
-                return redirect('/homehuman');
+                return redirect()->route('hr.dashboard');
             } else {
                 Auth::logout();
                 alert()->error('Akun Anda tidak memiliki akses yang sesuai.');

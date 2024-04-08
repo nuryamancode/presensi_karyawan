@@ -40,8 +40,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="eventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal fade" id="eventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -56,10 +55,15 @@
                         <p>Lokasi: <span id="location"></span></p>
                         <p>Deskripsi: <span id="description"></span></p>
                         <input type="hidden" id="id_agenda" name="id_agenda">
-                        <h5>Tambahkan Bukti Kunjungan:</h5>
-                        <div class="mb-3">
-                            <input type="file" accept="image/*" class="form-control" id="buktiKunjungan"
-                                name="foto_kunjungan" capture="camera">
+                        <div id="fotoKunjunganContainer" style="display: none;">
+                            <h5>Bukti Kunjungan</h5>
+                            <img id="fotoKunjungan" src="" alt="" width="150px">
+                        </div>
+                        <div id="buktiKunjunganContainer">
+                            <h5>Tambahkan Bukti Kunjungan:</h5>
+                            <div class="mb-3">
+                                <input type="file" accept="image/*" class="form-control" id="buktiKunjungan" name="foto_kunjungan" capture="camera">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -75,43 +79,52 @@
     <script src="/js/fullcalendar/locales/id.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                locale: 'id',
-                initialView: 'dayGridMonth',
-                slotMinTime: '09:00:00',
-                slotMaxTime: '17:00:00',
-                events: @json($events),
-                eventClick: function(info) {
-                    $('#eventModal .modal-title').text(info.event.title);
-                    $('#startDate').text(info.event.start.toLocaleString('id-ID', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true
-                    }));
-                    $('#endDate').text(info.event.end.toLocaleString('id-ID', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true
-                    }));
-                    $('#location').text(info.event.extendedProps.alamat);
-                    $('#description').text(info.event.extendedProps.description);
-                    $('#id_agenda').val(info.event.extendedProps.id_agenda);
-                    $('#eventModal').modal('show');
-                },
-                buttonText: {
-                    today: 'Hari Ini'
-                },
-            });
-            calendar.render();
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            locale: 'id',
+            initialView: 'dayGridMonth',
+            slotMinTime: '09:00:00',
+            slotMaxTime: '17:00:00',
+            events: @json($events),
+            eventClick: function(info) {
+                $('#eventModal .modal-title').text(info.event.title);
+                $('#startDate').text(info.event.start.toLocaleString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                }));
+                $('#endDate').text(info.event.end.toLocaleString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                }));
+                $('#location').text(info.event.extendedProps.alamat);
+                $('#description').text(info.event.extendedProps.description);
+                $('#id_agenda').val(info.event.extendedProps.id_agenda);
+                if (info.event.extendedProps.foto_kunjungan) {
+                    $('#fotoKunjungan').attr('src', "{{ asset('') }}" + info.event.extendedProps.foto_kunjungan);
+                    $('#fotoKunjunganContainer').show();
+                    $('#buktiKunjunganContainer').hide();
+                } else {
+                    $('#fotoKunjunganContainer').hide();
+                    $('#buktiKunjunganContainer').show();
+                }
+                $('#eventModal').modal('show');
+            },
+            buttonText: {
+                today: 'Hari Ini'
+            },
         });
+        calendar.render();
+    });
     </script>
+    
 @endsection

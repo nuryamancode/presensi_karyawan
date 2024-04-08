@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgendaM;
+use App\Models\HumanResourcesM;
+use App\Models\KaryawanModel;
+use App\Models\NotifikasiM;
 use Illuminate\Http\Request;
 
 class AgendaC extends Controller
@@ -13,8 +16,10 @@ class AgendaC extends Controller
      */
     public function __invoke(Request $request)
     {
+        $user_id = auth()->id();
+        $karyawan = KaryawanModel::where("user_id", $user_id)->first();
         $events = [];
-        $agenda = AgendaM::with('karyawan')->get();
+        $agenda = AgendaM::where('karyawan_id', $karyawan->id)->get();
         foreach ($agenda as $agendaItem) {
             $events[] = [
                 'title' => $agendaItem->nama_event . ' (' . $agendaItem->karyawan->nama_lengkap . ')',
@@ -23,6 +28,7 @@ class AgendaC extends Controller
                 'id_agenda' => $agendaItem->id,
                 'start' => $agendaItem->tanggal_mulai,
                 'end' => $agendaItem->tanggal_selesai,
+                'foto_kunjungan' => $agendaItem->foto_kunjungan, 
             ];
         }
         $data = [
@@ -30,9 +36,12 @@ class AgendaC extends Controller
         ];
         return view('karyawan.v-agenda', $data);
     }
-
+    
     public function post_kunjungan(Request $request)
     {
+        $hr = HumanResourcesM::first();
+        $user_id = auth()->id();
+        $karyawan = KaryawanModel::where("user_id", $user_id)->first();
         $request->validate([
             'foto_kunjungan' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ], [
@@ -46,7 +55,7 @@ class AgendaC extends Controller
             $file = $request->file('foto_kunjungan');
 
             if ($file->isValid()) {
-                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                $fileName = $file->getClientOriginalExtension();
                 $path = 'image/foto_kunjungan/' . $fileName;
                 $success = $file->move(public_path('image/foto_kunjungan'), $fileName);
 
@@ -55,6 +64,13 @@ class AgendaC extends Controller
                     $agenda->foto_kunjungan = $path;
 
                     if ($agenda->save()) {
+                        $notifikasi_sistem = new NotifikasiM([
+                            'judul' => $karyawan->nama_lengkap . ' menambahkan bukti kunjungan',
+                            'keterangan' => $karyawan->nama_lengkap . ' sudah menambahkan bukti kunjungan segera lihat',
+                            'status' => 'Bukti Kunjungan',
+                            'hr_id'=>$hr->id
+                        ]);
+                        $notifikasi_sistem->save();
                         alert()->success('Foto Kunjungan berhasil diunggah.');
                         return redirect()->back();
                     } else {

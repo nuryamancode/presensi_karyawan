@@ -1,11 +1,11 @@
-@extends('karyawan.layout.v-home', ['title' => 'Perijinan Karyawan'])
+@extends('karyawan.layout.v-home', ['title' => 'Perizinan Karyawan'])
 
 @section('section-content')
     @include('karyawan.layout.v-loader')
     <div class="appHeader text-light" style="background-color: #092c9f">
         <div class="left">
         </div>
-        <div class="pageTitle">Perijinan Karyawan</div>
+        <div class="pageTitle">Perizinan Karyawan</div>
         <div class="right"></div>
     </div>
     <!-- * App Header -->
@@ -29,7 +29,7 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    <ion-icon name="briefcase-outline" class="me-4"></ion-icon>Ijin Cuti
+                                    <ion-icon name="briefcase-outline" class="me-4"></ion-icon>Izin Cuti
                                 </button>
                             </h2>
                             <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
@@ -74,7 +74,7 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                    <ion-icon name="medkit-outline" class="me-4"></ion-icon>Ijin Sakit
+                                    <ion-icon name="medkit-outline" class="me-4"></ion-icon>Izin Sakit
                                 </button>
                             </h2>
                             <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
@@ -115,7 +115,7 @@
                 <ul class="nav nav-tabs style1" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active position-relative disabled" data-toggle="tab" role="tab">
-                            Riwayat Ajuan Perijinan
+                            Riwayat Ajuan Perizinan
                         </a>
                     </li>
                     <li class="nav-item">
@@ -125,10 +125,10 @@
             <div class="tab-content mt-2" style="margin-bottom:100px;">
                 <div class="tab-pane fade show active" id="profile" role="tabpanel">
                     <ul class="listview image-listview">
-                        @if ($cuti->isEmpty() || $cuti->isEmpty())
+                        @if ($cuti->isEmpty() && $sakit->isEmpty())
                             <li>
                                 <div class="text-center">
-                                    <h3 class="fw-bold mt-1">Belum ada riwayat presensi</h3>
+                                    <h3 class="fw-bold mt-1">Belum ada riwayat perizinan</h3>
                                 </div>
                             </li>
                         @else
@@ -140,7 +140,7 @@
                                         </div>
                                         <div class="in">
                                             <div>
-                                                <h3 class="fw-bold">Ijin Cuti</h3>
+                                                <h3 class="fw-bold">Izin Cuti</h3>
                                                 <span class="">
                                                     {{ \Carbon\Carbon::createFromFormat('Y-m-d', $item->tanggal_mulai_cuti)->translatedFormat('D, d F Y') }} - {{ \Carbon\Carbon::createFromFormat('Y-m-d', $item->tanggal_selesai_cuti)->translatedFormat('D, d F Y') }}
                                                 </span>
@@ -150,11 +150,11 @@
                                                 @endif
                                             </div>
                                             @if ($item->status_pengajuan === 'Disetujui')
-                                                <span class="btn btn-success">Disetujui</span>
+                                                <span class="btn btn-success disabled">Disetujui</span>
                                             @elseif($item->status_pengajuan === 'Ditolak')
-                                                <span class="btn btn-danger">Ditolak</span>
+                                                <span class="btn btn-danger disabled">Ditolak</span>
                                             @else
-                                                <span class="btn btn-primary">Belum ada status</span>
+                                                <span class="btn btn-primary disabled">Belum ada status</span>
                                             @endif
                                         </div>
                                     </div>
@@ -168,7 +168,7 @@
                                         </div>
                                         <div class="in">
                                             <div>
-                                                <h3 class="fw-bold">Ijin Sakit</h3>
+                                                <h3 class="fw-bold">Izin Sakit</h3>
                                                 <span class="">
                                                     {{ \Carbon\Carbon::createFromFormat('Y-m-d', $item->tanggal_mulai_sakit)->translatedFormat('D, d F Y') }} - {{ \Carbon\Carbon::createFromFormat('Y-m-d', $item->tanggal_selesai_sakit)->translatedFormat('D, d F Y') }}
                                                 </span>
@@ -177,11 +177,11 @@
                                                 @endif
                                             </div>
                                             @if ($item->status_pengajuan == 'Disetujui')
-                                                <span class="btn btn-success">Disetujui</span>
+                                                <span class="btn btn-success disabled">Disetujui</span>
                                             @elseif($item->status_pengajuan == 'Ditolak')
-                                                <span class="btn btn-danger">Ditolak</span>
+                                                <span class="btn btn-danger disabled">Ditolak</span>
                                             @else
-                                                <span class="btn btn-primary">Belum ada status</span>
+                                                <span class="btn btn-primary disabled">Belum ada status</span>
                                             @endif
                                         </div>
                                     </div>
@@ -200,9 +200,9 @@
 
             if (selectedReason === 'lainnya') {
                 otherReasonForm.style.display =
-                    'block'; // Menampilkan form tambahan jika opsi "Keperluan Lainnya" dipilih
+                    'block';
             } else {
-                otherReasonForm.style.display = 'none'; // Menyembunyikan form tambahan untuk opsi lainnya
+                otherReasonForm.style.display = 'none';
             }
         });
     </script>

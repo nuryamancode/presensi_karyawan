@@ -98,7 +98,7 @@
                                     </div>
                                     <div class="presencedetail">
                                         <h4 class="rekappresencetitle">Cuti</h4>
-                                        <span class="rekappresencedetail">0 Kali</span>
+                                        <span class="rekappresencedetail">{{$total_cuti}} Kali</span>
                                     </div>
                                 </div>
                             </div>
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="presencedetail">
                                         <h4 class="rekappresencetitle">Sakit</h4>
-                                        <span class="rekappresencedetail">0 Kali</span>
+                                        <span class="rekappresencedetail">{{ $total_sakit }} Kali</span>
                                     </div>
                                 </div>
                             </div>
@@ -151,11 +151,15 @@
                             <a class="nav-link position-relative" data-toggle="tab"
                                 href="{{ route('employee.notifikasi') }}" role="tab">
                                 Notifikasi
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    99+
-                                    <span class="visually-hidden">unread messages</span>
-                                </span>
+                                @if ($jumlah_notif != 0)
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ $jumlah_notif }}
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                @else
+                                    {{ null }}
+                                @endif
                             </a>
                         </li>
                     </ul>

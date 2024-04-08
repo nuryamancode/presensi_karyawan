@@ -17,7 +17,7 @@
         <div class="col">
             <ion-icon name="document-text-outline" role="img" class="md hydrated"
                 aria-label="document text outline"></ion-icon>
-            <strong>Perijinan</strong>
+            <strong>Perizinan</strong>
         </div>
     </a>
     <a href="{{ route('employee.profil') }}" class="item {{ Str::startsWith(request()->path(), 'employee/profil') ? 'active' : '' }}">

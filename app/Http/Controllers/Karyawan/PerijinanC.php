@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\CutiM;
+use App\Models\HumanResourcesM;
 use App\Models\KaryawanModel;
+use App\Models\NotifikasiM;
 use App\Models\SakitM;
 use Illuminate\Http\Request;
 
@@ -27,6 +29,7 @@ class PerijinanC extends Controller
     {
         $user = auth()->user();
         $karyawan = KaryawanModel::where('user_id', $user->id)->first();
+        $hr = HumanResourcesM::first();
         $request->validate([
             'keterangan' => 'required',
             'tanggal_mulai_cuti' => 'required|date|after_or_equal:today',
@@ -75,6 +78,40 @@ class PerijinanC extends Controller
             'karyawan_id' => $karyawan->id,
         ]);
         if ($cuti->save()) {
+            $notifikasi_sistem = new NotifikasiM([
+                'judul' => $karyawan->nama_lengkap . ' mengajukan cuti',
+                'keterangan' => $karyawan->nama_lengkap . ' mengajukan cuti dengan alasan ' . $keterangangabungan,
+                'status' => 'Pengajuan Cuti',
+                'hr_id' => $hr->id,
+            ]);
+            $notifikasi_sistem->save();
+            $token = 'Srywn8zTBvwwsZJ8WzA#';
+            $hr = HumanResourcesM::select('nama_lengkap', 'nomor_wa')->get();
+            $message = "Halo Bapak *{nama_lengkap}*,\n{$karyawan->nama_lengkap} sudah mengajukan cuti silahkan untuk segera dikonfirmasi secepatnya.\n\nhttps://marecayasa.com/\n\n\nSalam Hormat:\nCV Mareca Yasa Media";
+            foreach ($hr as $hr) {
+                $formattedMessage = str_replace('{nama_lengkap}', $hr->nama_lengkap, $message);
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://api.fonnte.com/send',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => array(
+                        'target' => $hr->nomor_wa,
+                        'message' => $formattedMessage,
+                        'countryCode' => '62',
+                    ),
+                    CURLOPT_HTTPHEADER => array(
+                        "Authorization: $token"
+                    ),
+                ));
+                $response = curl_exec($curl);
+                curl_close($curl);
+            }
             alert()->success('Ijin Cuti berhasil diajukan');
             return redirect()->back();
         } else {
@@ -86,6 +123,7 @@ class PerijinanC extends Controller
     {
         $user = auth()->user();
         $karyawan = KaryawanModel::where('user_id', $user->id)->first();
+        $hr = HumanResourcesM::first();
         $request->validate([
             'file_surat_sakit' => 'required|mimes:jpeg,png,jpg,pdf|max:2048',
             'tanggal_mulai_sakit' => 'required|date|date_equals:' . now()->format('Y-m-d'), // Tanggal mulai harus hari ini
@@ -111,32 +149,53 @@ class PerijinanC extends Controller
         }
         if ($request->hasFile('file_surat_sakit')) {
             $file = $request->file('file_surat_sakit');
-
-            if ($file->isValid()) {
-                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-                $path = 'image/file_surat_sakit/' . $fileName;
-                $success = $file->move(public_path('image/file_surat_sakit'), $fileName);
-
-                if ($success) {
-                    $sakit = new SakitM([
-                        'file_surat_sakit' => $path,
-                        'tanggal_mulai_sakit' => $request->input('tanggal_mulai_sakit'),
-                        'tanggal_selesai_sakit' => $request->input('tanggal_selesai_sakit'),
-                        'karyawan_id' => $karyawan->id
-                    ]);
-                    if ($sakit->save()) {
-                        alert()->success('Ijin Sakit berhasil diajukan');
-                        return redirect()->back();
-                    } else {
-                        alert()->error('Ijin Sakit tidak berhasil diajukan');
-                        return redirect()->back();
-                    }
-                } else {
-                    alert()->error('Gagal menyimpan file');
-                    return redirect()->back();
+            $fileName = $file->getClientOriginalName();
+            $file->move('image/file_surat_sakit/', $fileName);
+            $sakit = new SakitM([
+                'file_surat_sakit' => $fileName,
+                'tanggal_mulai_sakit' => $request->input('tanggal_mulai_sakit'),
+                'tanggal_selesai_sakit' => $request->input('tanggal_selesai_sakit'),
+                'karyawan_id' => $karyawan->id,
+            ]);
+            if ($sakit->save()) {
+                $notifikasi_sistem = new NotifikasiM([
+                    'judul' => $karyawan->nama_lengkap . ' mengajukan sakit',
+                    'keterangan' => $karyawan->nama_lengkap . ' mengajukan sakit dengan bukti bisa dilihat di tabel perizinan',
+                    'status' => 'Pengajuan Sakit',
+                    'hr_id' => $hr->id,
+                ]);
+                $notifikasi_sistem->save();
+                $token = 'Srywn8zTBvwwsZJ8WzA#';
+                $hr = HumanResourcesM::select('nama_lengkap', 'nomor_wa')->get();
+                $message = "Halo Bapak *{nama_lengkap}*,\n{$karyawan->nama_lengkap} sudah mengajukan perizinan sakit silahkan untuk segera dikonfirmasi secepatnya.\n\nhttps://marecayasa.com/\n\n\nSalam Hormat:\nCV Mareca Yasa Media";
+                foreach ($hr as $hr) {
+                    $formattedMessage = str_replace('{nama_lengkap}', $hr->nama_lengkap, $message);
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.fonnte.com/send',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => array(
+                            'target' => $hr->nomor_wa,
+                            'message' => $formattedMessage,
+                            'countryCode' => '62',
+                        ),
+                        CURLOPT_HTTPHEADER => array(
+                            "Authorization: $token"
+                        ),
+                    ));
+                    $response = curl_exec($curl);
+                    curl_close($curl);
                 }
+                alert()->success('Ijin Sakit berhasil diajukan');
+                return redirect()->back();
             } else {
-                alert()->error('File tidak valid');
+                alert()->error('Ijin Sakit tidak berhasil diajukan');
                 return redirect()->back();
             }
         }
