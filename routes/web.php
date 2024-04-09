@@ -39,7 +39,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/', [AuthC::class, 'index'])->name('login');
     Route::get('/login', [AuthC::class, 'index'])->name('login');
     Route::post('/login', [AuthC::class, 'login'])->name('login');
-    Route::get('/senreminder', [PresensiC::class, 'sendReminder'])->name('send.reminder');
+    Route::get('/lupa-password', [AuthC::class, 'forget_password'])->name('password.request');
+    Route::post('/lupa-password', [AuthC::class, 'forget_password_send'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthC::class, 'reset'])->name('password.reset');
+    Route::post('/reset-password', [AuthC::class, 'reset_password'])->name('password.update');
+
 });
 
 Route::middleware('auth')->group(function (){
